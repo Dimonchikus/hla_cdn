@@ -1,0 +1,76 @@
+version: '3'
+
+services:
+  # BIND Server
+  bind:
+    image: sameersbn/bind
+    container_name: bind-server
+    networks:
+      - cdn-network
+    ports:
+      - "53:53/udp"
+      - "53:53/tcp"
+    volumes:
+      - ./config/bind:/data
+
+  # Load Balancer 1
+  loadbalancer1:
+    image: haproxy:latest
+    container_name: loadbalancer1
+    networks:
+      - cdn-network
+    ports:
+      - "8081:80"
+    volumes:
+      - ./config/haproxy-lb1:/usr/local/etc/haproxy
+
+  # Load Balancer 2
+  loadbalancer2:
+    image: haproxy:latest
+    container_name: loadbalancer2
+    networks:
+      - cdn-network
+    ports:
+      - "8082:80"
+    volumes:
+      - ./config/haproxy-lb2:/usr/local/etc/haproxy
+
+  # Node 1
+  node1:
+    image: nginx:latest
+    container_name: node1
+    networks:
+      - cdn-network
+    expose:
+      - "80"
+
+  # Node 2
+  node2:
+    image: nginx:latest
+    container_name: node2
+    networks:
+      - cdn-network
+    expose:
+      - "80"
+
+  # Node 3
+  node3:
+    image: nginx:latest
+    container_name: node3
+    networks:
+      - cdn-network
+    expose:
+      - "80"
+
+  # Node 4
+  node4:
+    image: nginx:latest
+    container_name: node4
+    networks:
+      - cdn-network
+    expose:
+      - "80"
+
+networks:
+  cdn-network:
+    external: true
